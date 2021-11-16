@@ -109,49 +109,54 @@ def index():
   #
   # example of a database query
   #
-  cursor = g.conn.execute("""SELECT m.merchantname, p.productname, s.price
+  cursor = g.conn.execute("""SELECT m.merchantname, p.productname, p.productid, s.price
     FROM merchants m, products p, sells s
     WHERE m.merchantid = s.merchantid AND p.productid = s.productid;
+  """)
+  sells = []
+  for result in cursor:
+    sells.append(result)  # can also be accessed using result[0]
+  cursor.close()
+
+  context = dict(data = sells)
+
+  cursor = g.conn.execute("""SELECT *
+    FROM products p;
   """)
   products = []
   for result in cursor:
     products.append(result)  # can also be accessed using result[0]
   cursor.close()
+  context.update(product = products)
 
-  #
-  # Flask uses Jinja templates, which is an extension to HTML where you can
-  # pass data to a template and dynamically generate HTML based on the data
-  # (you can think of it as simple PHP)
-  # documentation: https://realpython.com/primer-on-jinja-templating/
-  #
-  # You can see an example template in templates/index.html
-  #
-  # context are the variables that are passed to the template.
-  # for example, "data" key in the context variable defined below will be 
-  # accessible as a variable in index.html:
-  #
-  #     # will print: [u'grace hopper', u'alan turing', u'ada lovelace']
-  #     <div>{{data}}</div>
-  #     
-  #     # creates a <div> tag for each element in data
-  #     # will print: 
-  #     #
-  #     #   <div>grace hopper</div>
-  #     #   <div>alan turing</div>
-  #     #   <div>ada lovelace</div>
-  #     #
-  #     {% for n in data %}
-  #     <div>{{n}}</div>
-  #     {% endfor %}
-  #
-  context = dict(data = products)
+  cursor = g.conn.execute("""SELECT c.creditcardtype
+    FROM creditcard c;
+  """)
+  creditcards = []
+  for result in cursor:
+    creditcards.append(result)  # can also be accessed using result[0]
+  cursor.close()
+  context.update(creditcard = creditcards)
 
+  cursor = g.conn.execute("""SELECT c.bank
+    FROM creditcard c;
+  """)
+  banks = []
+  for result in cursor:
+    banks.append(result)  # can also be accessed using result[0]
+  cursor.close()
+  context.update(bank = banks)
 
-  #
-  # render_template looks in the templates/ folder for files.
-  # for example, the below file reads template/index.html
-  #
   return render_template("index.html", **context)
+
+@app.route('/search', methods=['POST'])
+def search():
+  product = request.form['products']
+  creditcard = request.form['creditcard']
+  bank = request.form['bank']
+  coupon = request.form['coupontype']
+  # g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
+  return redirect('/')
 
 #
 # This is an example of a different path.  You can see it at:
@@ -163,15 +168,59 @@ def index():
 #
 @app.route('/another')
 def another():
-  return render_template("another.html")
+  cursor = g.conn.execute("""SELECT m.merchantname, m.merchantid, p.productname, p.productid, s.price
+    FROM merchants m, products p, sells s
+    WHERE m.merchantid = s.merchantid AND p.productid = s.productid;
+  """)
 
+  offers = []
+  for result in cursor:
+    offers.append(result)  # can also be accessed using result[0]
+  cursor.close()
+  context = dict(data = offers)
+
+  cursor = g.conn.execute("""SELECT t.thirdpartyname
+    FROM thirdparty t;
+  """)
+  thirdparty = []
+  for result in cursor:
+    thirdparty.append(result)  # can also be accessed using result[0]
+  cursor.close()
+  context.update(thirdParty = thirdparty)
+
+  cursor = g.conn.execute("""SELECT *
+    FROM manufacturers;
+  """)
+  manu = []
+  for result in cursor:
+    manu.append(result)  # can also be accessed using result[0]
+  cursor.close()
+  context.update(manufacturers = manu)
+
+  return render_template("another.html", **context)
 
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
 def add():
-  name = request.form['name']
+  couponid = request.form['couponid']
+  endtime = request.form['endtime']
+  multiple = request.form['multiple']
+
+  providers = request.form['providers']
+  if (providers != "merchants"):
+    providerid = request.form['providerid']
+  mercantid = request.form['merchantid']
+  productid = request.form['productid']
+  price = request.form['price']
+
   g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
-  return redirect('/')
+  return redirect('/another')
+
+@app.route('/delete', methods=['POST'])
+def add():
+  couponid = request.form['couponid']
+  g.conn.execute('DELETE FROM Coupons WHERE couponid = (%s);', couponid)
+  return redirect('/another')
 
 
 @app.route('/login')

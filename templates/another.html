@@ -1,1 +1,59 @@
-hello, I am another file!
+<html>
+  <style>
+    body{ 
+      font-size: 15pt;
+      font-family: arial;
+    }
+  </style>
+
+
+<body>
+  <h1>Add and Delete Deals</h1>
+  <div>{{data}}</div>
+
+  <div>
+    {% for n in data %}
+    <div>{{n}}</div>
+    {% endfor %}
+  </div>
+
+<p><a href="index">Go to Home Page</a></p>
+
+<h2>Add a deal</h2>
+<form method="POST" action="/add">
+<p>Coupon id: <input type="text" name="couponid"></p>
+<p>Coupon End Time: <input type="text" name="endtime"></p>
+<p>Coupon Multiple Offer Possible: <input type="checkbox" name="multiple"></p>
+<label for="providers">Choose a provider:</label>
+<select name="providers">
+	<option value="merchants">Merchants</option>
+	<option value="thirdParty">Third Party</option>
+	<option value="manufacturers">Manufacturers</option>
+</select>
+<select name="providerid">
+	<option value disalbe selected>Which Third Party?</option>
+	{% for n in thirdParty %}
+	<option value={{n}}>{{n}}</option>
+	{% endfor %}
+</select>
+<select name="providerid">
+	<option value disalbe selected>Which Manufacturers?</option>
+	{% for n in manufacturers %}
+	<option value={{n.manufacturerid}}>{{n.manufacturerName}}</option>
+	{% endfor %}
+</select>
+<p>Merchant id: <input type="text" name="merchantid"></p>
+<p>Product id: <input type="text" name="productid"></p>
+<p>Price: <input type="text" name="price"></p>
+<p><input type="submit" value="Add"></p>
+</form>
+
+<h2>Delete a deal</h2>
+<form method="POST" action="/delete">
+<p>Coupon id: <input type="text" name="couponid"><input type="submit" value="Delete"></p>
+</form>
+
+</body>
+
+
+</html>

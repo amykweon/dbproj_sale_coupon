@@ -8,7 +8,7 @@
 
 
 <body>
-  <h1>Some famous Computer Scientists</h1>
+  <h1>Search The Best Deal For You</h1>
   <div>{{data}}</div>
 
   <div>
@@ -19,8 +19,32 @@
 
 <p><a href="another">Go to the other page</a></p>
 
-<form method="POST" action="/add">
-<p>Name of new computer scientist: <input type="text" name="name"> <input type="submit" value="Add"></p>
+<form method="POST" action="/search">
+  <select name="coupontype">
+    <option value disalbe selected>Which Coupon?</option>
+    <option value="percentage">Percentage</option>
+    <option value="absval">Absolute Value</option>
+  </select>
+  <select name="products">
+    <option value disalbe selected>Which Products?</option>
+    {% for n in product %}
+    <option value={{n.productid}}>{{n.productName}}</option>
+    {% endfor %}
+  </select>
+  <select name="creditcard">
+    <option value disalbe selected>Which Credit Card?</option>
+    {% for n in creditcard %}
+    <option value={{n.creditcard}}>{{n.creditcard}}</option>
+    {% endfor %}
+  </select>
+  <select name="bank">
+    {% for n in bank %}
+    <option value={{n.bank}}>{{n.bank}}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" value="Search">
+
+
 </form>
 
 </body>
