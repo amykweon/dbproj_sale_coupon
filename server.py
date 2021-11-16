@@ -130,7 +130,7 @@ def index():
   context.update(product = products)
 
   cursor = g.conn.execute("""SELECT c.creditcardtype
-    FROM creditcard c;
+    FROM credit_cards c;
   """)
   creditcards = []
   for result in cursor:
@@ -139,7 +139,7 @@ def index():
   context.update(creditcard = creditcards)
 
   cursor = g.conn.execute("""SELECT c.bank
-    FROM creditcard c;
+    FROM credit_cards c;
   """)
   banks = []
   for result in cursor:
@@ -217,7 +217,7 @@ def add():
   return redirect('/another')
 
 @app.route('/delete', methods=['POST'])
-def add():
+def delete():
   couponid = request.form['couponid']
   g.conn.execute('DELETE FROM Coupons WHERE couponid = (%s);', couponid)
   return redirect('/another')

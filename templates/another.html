@@ -39,7 +39,7 @@
 <select name="providerid">
 	<option value disalbe selected>Which Manufacturers?</option>
 	{% for n in manufacturers %}
-	<option value={{n.manufacturerid}}>{{n.manufacturerName}}</option>
+	<option value={{n[1]}}>{{n[2]}}</option>
 	{% endfor %}
 </select>
 <p>Merchant id: <input type="text" name="merchantid"></p>

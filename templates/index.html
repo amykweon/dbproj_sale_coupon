@@ -28,18 +28,18 @@
   <select name="products">
     <option value disalbe selected>Which Products?</option>
     {% for n in product %}
-    <option value={{n.productid}}>{{n.productName}}</option>
+    <option value={{n[1]}}>{{n[2]}}</option>
     {% endfor %}
   </select>
   <select name="creditcard">
     <option value disalbe selected>Which Credit Card?</option>
     {% for n in creditcard %}
-    <option value={{n.creditcard}}>{{n.creditcard}}</option>
+    <option value={{n}}>{{n}}</option>
     {% endfor %}
   </select>
   <select name="bank">
     {% for n in bank %}
-    <option value={{n.bank}}>{{n.bank}}</option>
+    <option value={{n}}>{{n}}</option>
     {% endfor %}
   </select>
   <input type="submit" value="Search">
