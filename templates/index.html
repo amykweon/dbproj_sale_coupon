@@ -21,19 +21,19 @@
 
 <form method="POST" action="/search">
   <select name="coupontype">
-    <option value disalbe selected>Which Coupon?</option>
+    <option value=''>Which Coupon?</option>
     <!-- <option value="both">Both</option> -->
     <option value="percentage">Percentage</option>
     <option value="absval">Absolute Value</option>
   </select>
   <select name="products">
-    <option value disalbe selected>Which Products?</option>
+    <option value=''>Which Products?</option>
     {% for n in product %}
     <option value={{n[0]}}>{{n[1]}}</option>
     {% endfor %}
   </select>
   <select name="creditcard">
-    <option value disalbe selected>Which Bank and Credit Card?</option>
+    <option value=''>Which Bank and Credit Card?</option>
     {% for n in creditcard %}
     <option value={{n}}>{{n}}</option>
     {% endfor %}

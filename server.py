@@ -155,6 +155,10 @@ def search():
   creditcard = request.form['creditcard']
   # bank = request.form['bank']
   coupon = request.form['coupontype']
+
+  if (product == ''):
+      return redirect("/")
+
   if (coupon == "percentage"):
     cursor = g.conn.execute("""WITH Percent_Offers (provider, discountRate, coupon_from) AS (
       SELECT m.merchantName as Provider, pc.discountRate, 'Merchants'
@@ -213,7 +217,7 @@ def search():
 
       UNION
 
-      SELECT 'Absolute Value', ma.manufacturename as Provider, avc.discountValue, 'Manufacturers', 'Absolute Value'
+      SELECT 'Absolute Value', ma.manufacturename as Provider, avc.discountValue, 'Manufacturers'
       FROM Manufacturers ma, Manufacturer_Offer mao, absolute_value_coupons avc
       WHERE ma.manufactureid = mao.manufactureid AND mao.productid = %s AND mao.couponid = avc.couponid
 
@@ -237,7 +241,7 @@ def search():
       SELECT *
       FROM Value_Offers AS po
       ORDER BY po.coupontype DESC, po.discount DESC;
-      """, product, product, product)
+      """, product, product, product, product, product, product)
 
 
   output = []
@@ -247,24 +251,23 @@ def search():
 
 
  ## pick the credit card of interest ##
-  cursor2 = g.conn.execute("""
-  SELECT card.cashback, card.creditCardType, card.Bank
-  FROM card_offer_discount card
-  WHERE card.cashback IN (
+  if (creditcard != ''):
+    cursor2 = g.conn.execute("""
+    SELECT card.cashback, card.creditCardType, card.Bank
+    FROM card_offer_discount card
+    WHERE card.cashback IN (
       SELECT c.cashback
       FROM merchants m, sells s, card_offer_discount c
       WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category)
       )
-  ORDER BY card.cashback DESC;
+    ORDER BY card.cashback DESC;
 
-  """,product)
-
-
-  for result in cursor2:
-    output.append(result)
+    """,product)
+    for result in cursor2:
+        output.append(result)
+    cursor.close()
 
   context = dict(data = output)
-
   # g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
   return render_template("index.html", **context)
 
@@ -289,7 +292,7 @@ def another():
   cursor.close()
   context = dict(data = offers)
 
-  cursor = g.conn.execute("""SELECT t.thirdpartyname
+  cursor = g.conn.execute("""SELECT *
     FROM third_party t;
   """)
   thirdparty = []
@@ -318,10 +321,7 @@ def add():
   multiple = request.form['multiple']
   value = request.form['value']
 
-  if (multiple):
-    g.conn.execute('INSERT INTO Coupons VALUES (%s, %s, TRUE);', couponid, endtime)
-  else:
-    g.conn.execute('INSERT INTO Coupons VALUES (%s, %s, FALSE);', couponid, endtime)
+  g.conn.execute('INSERT INTO Coupons VALUES (%s, %s, %s);', couponid, endtime, multiple)
   
   if (coupontype == 'percentage'):
     g.conn.execute('INSERT INTO Percentage_coupons VALUES ({}, {});'.format(value, couponid))
@@ -330,20 +330,21 @@ def add():
 
   providers = request.form['providers']
   if (providers != "merchants"):
-    providerid = request.form['providerid']
+    thirdpartyid = request.form['thirdpartyid']
+    manuid = request.form['manuid']
   mercantid = request.form['merchantid']
   productid = request.form['productid']
   price = request.form['price']
 
   if(providers == 'thirdParty'):
-    g.conn.execute('INSERT INTO third_party_offer VALUES (%s, %s, %s, %s, %f);', 
-      providerid, couponid, productid, mercantid, price)
+    g.conn.execute('INSERT INTO third_party_offer VALUES (\'{}\', {}, {}, {}, {});'.format( 
+      thirdpartyid, couponid, productid, mercantid, price))
   elif (providers == 'manufacturers'):
-    g.conn.execute('INSERT INTO manufacturer_offer VALUES (%s, %s, %s, %s, %f);', 
-      couponid, providerid, productid, mercantid, price)
+    g.conn.execute('INSERT INTO manufacturer_offer VALUES ({}, {}, {}, {}, {});'.format( 
+      couponid, manuid, productid, mercantid, price))
   else:
-    g.conn.execute('INSERT INTO manufacturer_offer VALUES (%s, %s, %s, %f);', 
-      couponid, mercantid, productid, price)
+    g.conn.execute('INSERT INTO merchant_offer VALUES ({}, {}, {}, {});'.format( 
+      couponid, mercantid, productid, price))
   
   return redirect('/another')
 

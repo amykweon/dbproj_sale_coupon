@@ -27,21 +27,24 @@
   </select>
 <p>Coupon id: <input type="text" name="couponid"></p>
 <p>Coupon End Time: <input type="text" name="endtime" placeholder="yyyy-mm-dd"></p>
-<p>Coupon Multiple Offer Possible: <input type="checkbox" name="multiple"></p>
-<p>Coupon Discount: <input type="number" name="value"></p>
+<p>Coupon Multiple Offer Possible: <select name ="multiple">
+	<option value="TRUE">True</option>
+	<option value="FALSE">False</option>
+</select></p>
+<p>Coupon Discount: <input type="text" name="value"></p>
 <label for="providers">Choose a provider:</label>
 <select name="providers">
 	<option value="merchants">Merchants</option>
 	<option value="thirdParty">Third Party</option>
 	<option value="manufacturers">Manufacturers</option>
 </select>
-<select name="providerid">
+<select name="thirdpartyid">
 	<option value disalbe selected>Which Third Party?</option>
 	{% for n in thirdParty %}
-	<option value={{n}}>{{n}}</option>
+	<option value={{n[0]}}>{{n[0]}}</option>
 	{% endfor %}
 </select>
-<select name="providerid">
+<select name="manuid">
 	<option value disalbe selected>Which Manufacturers?</option>
 	{% for n in manufacturers %}
 	<option value={{n[0]}}>{{n[1]}}</option>
