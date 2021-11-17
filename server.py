@@ -305,9 +305,9 @@ def add():
     g.conn.execute('INSERT INTO Coupons VALUES (%s, %s, FALSE);', couponid, endtime)
   
   if (coupontype == 'percentage'):
-    g.conn.execute('INSERT INTO Percentage_coupons VALUES (%f, %s);', value, couponid)
+    g.conn.execute('INSERT INTO Percentage_coupons VALUES ({}, {});'.format(value, couponid))
   else:
-    g.conn.execute('INSERT INTO Absolute_Value_coupons VALUES (%f, %s);', value, couponid)
+    g.conn.execute('INSERT INTO Absolute_Value_coupons VALUES ({}, {});'.format(value, couponid))
 
   providers = request.form['providers']
   if (providers != "merchants"):
