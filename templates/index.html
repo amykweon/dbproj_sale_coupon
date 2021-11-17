@@ -6,7 +6,11 @@
     }
   </style>
 
-
+  <style>
+    table, th, td {
+      border:1px solid black;
+    }
+  </style>
 <body>
   <h1>Search The Best Deal For You</h1>
 <!--   <div>{{data}}</div> -->
@@ -43,10 +47,22 @@
 
 <!-- display all data -->
 <div>
-  <p> merchant, product, product id, price<\p>
+  <table>
+    <tr>
+      <th> Merchant, Product ID, Price </th>
+<!--       <th> Product  </th>
+      <th> Product ID </th>
+      <th> Price    </th>  -->
+    </tr>
     {% for n in data %}
-    <div>{{n}}</div>
+      <tr>
+        <th>{{n}}</th>
+      </tr>
     {% endfor %}
+  </table>
+<!--   {% for n in data %}
+    <div>{{n}}</div>
+  {% endfor %}   -->
 </div>
   
 </body>
