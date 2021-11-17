@@ -133,8 +133,11 @@ def index():
     FROM credit_cards c;
   """)
   creditcards = []
+  print('=====================')
   for result in cursor:
+    print(result)
     creditcards.append(result)  # can also be accessed using result[0]
+  print('=====================')
   cursor.close()
   context.update(creditcard = creditcards)
 
