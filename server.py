@@ -129,7 +129,7 @@ def index():
   cursor.close()
   context.update(product = products)
 
-  cursor = g.conn.execute("""SELECT c.bank, c.creditcardtype
+  cursor = g.conn.execute("""SELECT (c.bank, c.creditcardtype)
     FROM credit_cards c;
   """)
   creditcards = []
