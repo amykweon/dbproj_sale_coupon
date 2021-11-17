@@ -252,6 +252,21 @@ def search():
 
  ## pick the credit card of interest ##
   if (creditcard != ''):
+    bank_inp, card_inp = creditcard.split(", ")
+    
+    cursor2 = g.conn.execute("""
+    SELECT card.cashback, card.creditCardType, card.Bank
+    FROM card_offer_discount card
+    WHERE card.cashback IN (
+      SELECT c.cashback
+      FROM merchants m, sells s, card_offer_discount c
+      WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category) AND 
+        c.creditCardType=%s AND c.BANK=%s
+      )
+    ORDER BY card.cashback DESC;
+
+    """,product, card_inp[:-1], bank_inp[1:]) #remove '(' and ')'
+  else:
     cursor2 = g.conn.execute("""
     SELECT card.cashback, card.creditCardType, card.Bank
     FROM card_offer_discount card
@@ -263,9 +278,10 @@ def search():
     ORDER BY card.cashback DESC;
 
     """,product)
+    
     for result in cursor2:
         output.append(result)
-    cursor.close()
+    cursor2.close()
 
   context = dict(data = output)
   # g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
