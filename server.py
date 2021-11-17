@@ -114,20 +114,25 @@ def index():
     WHERE m.merchantid = s.merchantid AND p.productid = s.productid;
   """)
   sells = []
+  print('========sells=============')
   for result in cursor:
+    print(result)
     sells.append(result)  # can also be accessed using result[0]
   cursor.close()
-
+  print('========sells=============')
   context = dict(data = sells)
-
+  
+  print('========products=============')
   cursor = g.conn.execute("""SELECT *
     FROM products p;
   """)
   products = []
   for result in cursor:
+    print(result)
     products.append(result)  # can also be accessed using result[0]
   cursor.close()
   context.update(product = products)
+  print('========products=============')
 
 
   cursor = g.conn.execute("""SELECT *
