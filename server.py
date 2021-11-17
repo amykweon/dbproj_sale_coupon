@@ -239,25 +239,10 @@ def search():
       ORDER BY po.coupontype DESC, po.discount DESC;
       """, product, product, product)
 
-
   output = []
   for result in cursor:
     output.append(result)  # can also be accessed using result[0]
   cursor.close()
-
-  ### pick the credit card of interest ##
-  cursor2 = g.conn.execute("""
-  SELECT card.cashback, card.creditCardType, card.Bank
-  FROM card_offer_discount card
-  WHERE card.cashback IN (SELECT MAX(c.cashback)
-  FROM merchants m, sells s, card_offer_discount c
-  WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category));
-
-  """,product)
-
-
-  for result in cursor2:
-    output.append(result)
 
   context = dict(data = output)
 
