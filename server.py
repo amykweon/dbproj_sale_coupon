@@ -246,22 +246,22 @@ def search():
   cursor.close()
 
 
- ### pick the credit card of interest ##
-  # cursor2 = g.conn.execute("""
-  # SELECT card.cashback, card.creditCardType, card.Bank
-  # FROM card_offer_discount card
-  # WHERE card.cashback IN (
-  #     SELECT c.cashback
-  #     FROM merchants m, sells s, card_offer_discount c
-  #     WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category)
-  #     )
-  # ORDER BY card.cashback DESC;
+ ## pick the credit card of interest ##
+  cursor2 = g.conn.execute("""
+  SELECT card.cashback, card.creditCardType, card.Bank
+  FROM card_offer_discount card
+  WHERE card.cashback IN (
+      SELECT c.cashback
+      FROM merchants m, sells s, card_offer_discount c
+      WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category)
+      )
+  ORDER BY card.cashback DESC;
 
-  # """,product)
+  """,product)
 
 
-  # for result in cursor2:
-  #   output.append(result)
+  for result in cursor2:
+    output.append(result)
 
   context = dict(data = output)
 
