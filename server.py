@@ -129,7 +129,7 @@ def index():
   cursor.close()
   context.update(product = products)
 
-  cursor = g.conn.execute("""SELECT c.creditcardtype
+  cursor = g.conn.execute("""SELECT c.bank, c.creditcardtype
     FROM credit_cards c;
   """)
   creditcards = []
@@ -138,14 +138,14 @@ def index():
   cursor.close()
   context.update(creditcard = creditcards)
 
-  cursor = g.conn.execute("""SELECT c.bank
-    FROM credit_cards c;
-  """)
-  banks = set()
-  for result in cursor:
-    banks.add(result)  # can also be accessed using result[0]
-  cursor.close()
-  context.update(bank = banks)
+  # cursor = g.conn.execute("""SELECT c.bank
+  #   FROM credit_cards c;
+  # """)
+  # banks = set()
+  # for result in cursor:
+  #   banks.add(result)  # can also be accessed using result[0]
+  # cursor.close()
+  # context.update(bank = banks)
 
   return render_template("index.html", **context)
 
@@ -245,13 +245,17 @@ def search():
     output.append(result)  # can also be accessed using result[0]
   cursor.close()
 
-  ### pick the credit card of interest ##
+
+ ### pick the credit card of interest ##
   cursor2 = g.conn.execute("""
   SELECT card.cashback, card.creditCardType, card.Bank
   FROM card_offer_discount card
-  WHERE card.cashback IN (SELECT MAX(c.cashback)
-  FROM merchants m, sells s, card_offer_discount c
-  WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category));
+  WHERE card.cashback IN (
+      SELECT c.cashback
+      FROM merchants m, sells s, card_offer_discount c
+      WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category)
+      )
+  ORDER BY card.cashback DESC;
 
   """,product)
 
