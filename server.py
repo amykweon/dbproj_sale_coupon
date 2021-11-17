@@ -300,14 +300,14 @@ def add():
   value = request.form['value']
 
   if (multiple):
-    g.conn.execute('INSERT INTO Coupons VALUE (%s, %s, TRUE);', couponid, endtime)
+    g.conn.execute('INSERT INTO Coupons VALUES (%s, %s, TRUE);', couponid, endtime)
   else:
-    g.conn.execute('INSERT INTO Coupons VALUE (%s, %s, FALSE);', couponid, endtime)
+    g.conn.execute('INSERT INTO Coupons VALUES (%s, %s, FALSE);', couponid, endtime)
   
   if (coupontype == 'percentage'):
-    g.conn.execute('INSERT INTO Percentage_coupons VALUE (%f, %s);', value, couponid)
+    g.conn.execute('INSERT INTO Percentage_coupons VALUES (%f, %s);', value, couponid)
   else:
-    g.conn.execute('INSERT INTO Absolute_Value_coupons VALUE (%f, %s);', value, couponid)
+    g.conn.execute('INSERT INTO Absolute_Value_coupons VALUES (%f, %s);', value, couponid)
 
   providers = request.form['providers']
   if (providers != "merchants"):
@@ -317,13 +317,13 @@ def add():
   price = request.form['price']
 
   if(providers == 'thirdParty'):
-    g.conn.execute('INSERT INTO third_party_offer VALUE (%s, %s, %s, %s, %f);', 
+    g.conn.execute('INSERT INTO third_party_offer VALUES (%s, %s, %s, %s, %f);', 
       providerid, couponid, productid, mercantid, price)
   elif (providers == 'manufacturers'):
-    g.conn.execute('INSERT INTO manufacturer_offer VALUE (%s, %s, %s, %s, %f);', 
+    g.conn.execute('INSERT INTO manufacturer_offer VALUES (%s, %s, %s, %s, %f);', 
       couponid, providerid, productid, mercantid, price)
   else:
-    g.conn.execute('INSERT INTO manufacturer_offer VALUE (%s, %s, %s, %f);', 
+    g.conn.execute('INSERT INTO manufacturer_offer VALUES (%s, %s, %s, %f);', 
       couponid, mercantid, productid, price)
   
   return redirect('/another')
