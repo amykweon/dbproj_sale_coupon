@@ -17,7 +17,7 @@
     {% endfor %}
   </div>
 
-<p><a href="another">Go to the other page</a></p>
+<p><a href="another">Enter Merchant Mode</a></p>
 
 <form method="POST" action="/search">
   <select name="coupontype">
@@ -28,7 +28,7 @@
   <select name="products">
     <option value disalbe selected>Which Products?</option>
     {% for n in product %}
-    <option value={{n[1]}}>{{n[2]}}</option>
+    <option value={{n[0]}}>{{n[1]}}</option>
     {% endfor %}
   </select>
   <select name="creditcard">

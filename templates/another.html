@@ -17,7 +17,7 @@
     {% endfor %}
   </div>
 
-<p><a href="index">Go to Home Page</a></p>
+<p><a href="/">Go to Home Page</a></p>
 
 <h2>Add a deal</h2>
 <form method="POST" action="/add">
@@ -39,7 +39,7 @@
 <select name="providerid">
 	<option value disalbe selected>Which Manufacturers?</option>
 	{% for n in manufacturers %}
-	<option value={{n[1]}}>{{n[2]}}</option>
+	<option value={{n[0]}}>{{n[1]}}</option>
 	{% endfor %}
 </select>
 <p>Merchant id: <input type="text" name="merchantid"></p>
