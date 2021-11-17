@@ -153,7 +153,7 @@ def index():
 def search():
   product = request.form['products']
   creditcard = request.form['creditcard']
-  bank = request.form['bank']
+  # bank = request.form['bank']
   coupon = request.form['coupontype']
   if (coupon == "percentage"):
     cursor = g.conn.execute("""WITH Percent_Offers (provider, discountRate, coupon_from) AS (
