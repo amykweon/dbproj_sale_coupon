@@ -156,22 +156,22 @@ def search():
   bank = request.form['bank']
   coupon = request.form['coupontype']
   if (coupon == "percentage"):
-    cursor = g.conn.execute("""WITH Percent_Offers (provider, discountValue, coupon_from) AS (
-      SELECT m.merchantName as Provider, avc.discountValue, 'Merchants'
-      FROM Merchants m, merchant_offer mo, percentage_coupons avc
-      WHERE m.merchantid = mo.merchantid AND mo.productid = %s AND mo.couponid = avc.couponid
+    cursor = g.conn.execute("""WITH Percent_Offers (provider, discountRate, coupon_from) AS (
+      SELECT m.merchantName as Provider, pc.discountRate, 'Merchants'
+      FROM Merchants m, merchant_offer mo, percentage_coupons pc
+      WHERE m.merchantid = mo.merchantid AND mo.productid = %s AND mo.couponid = pc.couponid
 
       UNION
 
-      SELECT tpo.thirdPartyName as Provider, avc.discountValue, 'Third Party'
-      FROM Third_Party_Offer tpo, percentage_coupons avc
-      WHERE tpo.productid = %s AND tpo.couponid = avc.couponid
+      SELECT tpo.thirdPartyName as Provider, pc.discountRate, 'Third Party'
+      FROM Third_Party_Offer tpo, percentage_coupons pc
+      WHERE tpo.productid = %s AND tpo.couponid = pc.couponid
 
       UNION
 
-      SELECT ma.manufacturename as Provider, avc.discountValue, 'Manufacturers'
-      FROM Manufacturers ma, Manufacturer_Offer mao, percentage_coupons avc
-      WHERE ma.manufactureid = mao.manufactureid AND mao.productid = %s AND mao.couponid = avc.couponid
+      SELECT ma.manufacturename as Provider, pc.discountRate, 'Manufacturers'
+      FROM Manufacturers ma, Manufacturer_Offer mao, percentage_coupons pc
+      WHERE ma.manufactureid = mao.manufactureid AND mao.productid = %s AND mao.couponid = pc.couponid
       )
       SELECT *
       FROM Percent_Offers AS po
