@@ -11,12 +11,6 @@
   <h1>Search The Best Deal For You</h1>
   <div>{{data}}</div>
 
-  <div>
-    {% for n in data %}
-    <div>{{n}}</div>
-    {% endfor %}
-  </div>
-
 <p><a href="another">Enter Merchant Mode</a></p>
 
 <form method="POST" action="/search">
@@ -47,6 +41,13 @@
   <p><a href="/">Search Again</a></p>
 </form>
 
+<!-- display all data -->
+<div>
+    {% for n in data %}
+    <div>{{n}}</div>
+    {% endfor %}
+</div>
+  
 </body>
 
 
