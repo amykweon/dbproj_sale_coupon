@@ -154,6 +154,9 @@ def index():
 
 @app.route('/search', methods=['POST'])
 def search():
+  print('***********************')
+  print(request.form)
+  print('***********************')
   product = request.form['products']
   creditcard = request.form['creditcard']
   # bank = request.form['bank']
