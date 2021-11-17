@@ -252,6 +252,7 @@ def search():
 
  ## pick the credit card of interest ##
   if (creditcard != ''):
+    print(creditcard, type(creditcard))
     bank_inp, card_inp = creditcard.split(", ")
     
     cursor2 = g.conn.execute("""
