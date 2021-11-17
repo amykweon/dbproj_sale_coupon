@@ -21,9 +21,14 @@
 
 <h2>Add a deal</h2>
 <form method="POST" action="/add">
+  <select name="coupontype">
+    <option value="percentage">Percentage</option>
+    <option value="absval">Absolute Value</option>
+  </select>
 <p>Coupon id: <input type="text" name="couponid"></p>
-<p>Coupon End Time: <input type="text" name="endtime"></p>
+<p>Coupon End Time: <input type="text" name="endtime" placeholder="yyyy-mm-dd"></p>
 <p>Coupon Multiple Offer Possible: <input type="checkbox" name="multiple"></p>
+<p>Coupon Discount: <input type="number" name="value"></p>
 <label for="providers">Choose a provider:</label>
 <select name="providers">
 	<option value="merchants">Merchants</option>

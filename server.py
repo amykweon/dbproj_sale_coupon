@@ -175,7 +175,7 @@ def search():
       )
       SELECT *
       FROM Percent_Offers AS po
-      ORDER BY po.discountValue DESC;
+      ORDER BY po.discountRate DESC;
       """, product, product, product)
   elif (coupon == "absval"):
     cursor = g.conn.execute("""WITH Value_Offers (provider, discountValue, coupon_from) AS (
@@ -198,6 +198,45 @@ def search():
       SELECT *
       FROM Value_Offers AS po
       ORDER BY po.discountValue DESC;
+      """, product, product, product)
+  else:
+    cursor = g.conn.execute("""WITH Value_Offers (coupontype, provider, discount, coupon_from) AS (
+      SELECT 'Absolute Value', m.merchantName as Provider, avc.discountValue, 'Merchants'
+      FROM Merchants m, merchant_offer mo, absolute_value_coupons avc
+      WHERE m.merchantid = mo.merchantid AND mo.productid = %s AND mo.couponid = avc.couponid
+
+      UNION
+
+      SELECT 'Absolute Value', tpo.thirdPartyName as Provider, avc.discountValue, 'Third Party'
+      FROM Third_Party_Offer tpo, absolute_value_coupons avc
+      WHERE tpo.productid = %s AND tpo.couponid = avc.couponid
+
+      UNION
+
+      SELECT 'Absolute Value', ma.manufacturename as Provider, avc.discountValue, 'Manufacturers', 'Absolute Value'
+      FROM Manufacturers ma, Manufacturer_Offer mao, absolute_value_coupons avc
+      WHERE ma.manufactureid = mao.manufactureid AND mao.productid = %s AND mao.couponid = avc.couponid
+
+      UNION
+      SELECT 'Percentage', m.merchantName as Provider, pc.discountRate, 'Merchants'
+      FROM Merchants m, merchant_offer mo, percentage_coupons pc
+      WHERE m.merchantid = mo.merchantid AND mo.productid = %s AND mo.couponid = pc.couponid
+
+      UNION
+
+      SELECT 'Percentage', tpo.thirdPartyName as Provider, pc.discountRate, 'Third Party'
+      FROM Third_Party_Offer tpo, percentage_coupons pc
+      WHERE tpo.productid = %s AND tpo.couponid = pc.couponid
+
+      UNION
+
+      SELECT 'Percentage', ma.manufacturename as Provider, pc.discountRate, 'Manufacturers'
+      FROM Manufacturers ma, Manufacturer_Offer mao, percentage_coupons pc
+      WHERE ma.manufactureid = mao.manufactureid AND mao.productid = %s AND mao.couponid = pc.couponid
+      )
+      SELECT *
+      FROM Value_Offers AS po
+      ORDER BY po.coupontype DESC, po.discount DESC;
       """, product, product, product)
 
   output = []
@@ -254,9 +293,21 @@ def another():
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
 def add():
+  coupontype = request.form['coupontype']
   couponid = request.form['couponid']
   endtime = request.form['endtime']
   multiple = request.form['multiple']
+  value = request.form['value']
+
+  if (multiple):
+    g.conn.execute('INSERT INTO Coupons VALUE (%s, %s, TRUE);', couponid, endtime)
+  else:
+    g.conn.execute('INSERT INTO Coupons VALUE (%s, %s, FALSE);', couponid, endtime)
+  
+  if (coupontype == 'percentage'):
+    g.conn.execute('INSERT INTO Percentage_coupons VALUE (%f, %s);', value, couponid)
+  else:
+    g.conn.execute('INSERT INTO Absolute_Value_coupons VALUE (%f, %s);', value, couponid)
 
   providers = request.form['providers']
   if (providers != "merchants"):
@@ -265,13 +316,22 @@ def add():
   productid = request.form['productid']
   price = request.form['price']
 
-  g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
+  if(providers == 'thirdParty'):
+    g.conn.execute('INSERT INTO third_party_offer VALUE (%s, %s, %s, %s, %f);', 
+      providerid, couponid, productid, mercantid, price)
+  elif (providers == 'manufacturers'):
+    g.conn.execute('INSERT INTO manufacturer_offer VALUE (%s, %s, %s, %s, %f);', 
+      couponid, providerid, productid, mercantid, price)
+  else:
+    g.conn.execute('INSERT INTO manufacturer_offer VALUE (%s, %s, %s, %f);', 
+      couponid, mercantid, productid, price)
+  
   return redirect('/another')
 
 @app.route('/delete', methods=['POST'])
 def delete():
   couponid = request.form['couponid']
-  g.conn.execute('DELETE FROM Coupons WHERE couponid = (%s);', couponid)
+  g.conn.execute('DELETE FROM Coupons WHERE couponid = %s;', couponid)
   return redirect('/another')
 
 
