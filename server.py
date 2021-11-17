@@ -232,7 +232,7 @@ def another():
   context = dict(data = offers)
 
   cursor = g.conn.execute("""SELECT t.thirdpartyname
-    FROM thirdparty t;
+    FROM third_party t;
   """)
   thirdparty = []
   for result in cursor:
