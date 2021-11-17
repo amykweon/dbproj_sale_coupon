@@ -129,11 +129,8 @@ def index():
   cursor.close()
   context.update(product = products)
 
-<<<<<<< HEAD
-  cursor = g.conn.execute("""SELECT * 
-=======
+
   cursor = g.conn.execute("""SELECT c.bank, c.creditcardtype
->>>>>>> parent of 769c8e9 (Update server.py)
     FROM credit_cards c;
   """) #c.bank, c.creditcardtype
   creditcards = []
