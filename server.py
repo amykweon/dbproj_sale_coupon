@@ -141,9 +141,9 @@ def index():
   cursor = g.conn.execute("""SELECT c.bank
     FROM credit_cards c;
   """)
-  banks = []
+  banks = set()
   for result in cursor:
-    banks.append(result)  # can also be accessed using result[0]
+    banks.add(result)  # can also be accessed using result[0]
   cursor.close()
   context.update(bank = banks)
 
@@ -155,8 +155,60 @@ def search():
   creditcard = request.form['creditcard']
   bank = request.form['bank']
   coupon = request.form['coupontype']
+  if (coupon == "percentage"):
+    cursor = g.conn.execute("""WITH Percent_Offers (provider, discountValue, coupon_from) AS (
+      SELECT m.merchantName as Provider, avc.discountValue, 'Merchants'
+      FROM Merchants m, merchant_offer mo, percentage_coupons avc
+      WHERE m.merchantid = mo.merchantid AND mo.productid = %s AND mo.couponid = avc.couponid
+
+      UNION
+
+      SELECT tpo.thirdPartyName as Provider, avc.discountValue, 'Third Party'
+      FROM Third_Party_Offer tpo, percentage_coupons avc
+      WHERE tpo.productid = %s AND tpo.couponid = avc.couponid
+
+      UNION
+
+      SELECT ma.manufacturename as Provider, avc.discountValue, 'Manufacturers'
+      FROM Manufacturers ma, Manufacturer_Offer mao, percentage_coupons avc
+      WHERE ma.manufactureid = mao.manufactureid AND mao.productid = %s AND mao.couponid = avc.couponid
+      )
+      SELECT *
+      FROM Percent_Offers AS po
+      ORDER BY po.discountValue DESC;
+      """, product, product, product)
+  elif (coupon == "absval"):
+    cursor = g.conn.execute("""WITH Value_Offers (provider, discountValue, coupon_from) AS (
+      SELECT m.merchantName as Provider, avc.discountValue, 'Merchants'
+      FROM Merchants m, merchant_offer mo, absolute_value_coupons avc
+      WHERE m.merchantid = mo.merchantid AND mo.productid = %s AND mo.couponid = avc.couponid
+
+      UNION
+
+      SELECT tpo.thirdPartyName as Provider, avc.discountValue, 'Third Party'
+      FROM Third_Party_Offer tpo, absolute_value_coupons avc
+      WHERE tpo.productid = %s AND tpo.couponid = avc.couponid
+
+      UNION
+
+      SELECT ma.manufacturename as Provider, avc.discountValue, 'Manufacturers'
+      FROM Manufacturers ma, Manufacturer_Offer mao, absolute_value_coupons avc
+      WHERE ma.manufactureid = mao.manufactureid AND mao.productid = %s AND mao.couponid = avc.couponid
+      )
+      SELECT *
+      FROM Value_Offers AS po
+      ORDER BY po.discountValue DESC;
+      """, product, product, product)
+
+  output = []
+  for result in cursor:
+    output.append(result)  # can also be accessed using result[0]
+  cursor.close()
+
+  context = dict(data = output)
+
   # g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
-  return redirect('/')
+  return render_template("index.html", **context)
 
 #
 # This is an example of a different path.  You can see it at:
