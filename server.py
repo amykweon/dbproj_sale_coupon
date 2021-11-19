@@ -273,7 +273,7 @@ def search():
       SELECT c.cashback, c.Bank, c.creditCardType
       FROM merchants m, sells s, card_offer_discount c
       WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category)
-      ORDER BY card.cashback DESC;
+      ORDER BY c.cashback DESC;
       """,product)
     
   for result in cursor2:
