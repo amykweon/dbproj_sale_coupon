@@ -114,38 +114,27 @@ def index():
     WHERE m.merchantid = s.merchantid AND p.productid = s.productid;
   """)
   sells = []
-  print('========sells=============')
   for result in cursor:
-    print(result)
     sells.append(result)  # can also be accessed using result[0]
   cursor.close()
-  print('========sells=============')
   context = dict(data = sells)
   
-  print('========products=============')
   cursor = g.conn.execute("""SELECT *
     FROM products p;
   """)
   products = []
   for result in cursor:
-    print(result, type(result))
     products.append(result)  # can also be accessed using result[0]
   cursor.close()
   context.update(product = products)
-  print('========products=============')
 
 
   cursor = g.conn.execute("""SELECT *
     FROM credit_cards c;
   """) #c.bank, c.creditcardtype
   creditcards = []
-  print('=====================')
   for result in cursor:
-    print(result, type(result))
-    for i in result:
-        print(i, type(i))
     creditcards.append(result)  # can also be accessed using result[0]
-  print('=====================')
   cursor.close()
   context.update(creditcard = creditcards)
 
@@ -272,23 +261,20 @@ def search():
     card_inp = ' '.join(card_inp.split(','))
     bank_inp = ' '.join(bank_inp.split(','))
     print(bank_inp, card_inp, 'finally!!!!')
-    cursor2 = g.conn.execute(' \
-    SELECT c.cashback, c.Bank, c.creditCardType \
-      FROM merchants m, sells s, card_offer_discount c \
-      WHERE s.productid=\'{}\' AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category) AND c.creditCardType=\'{}\' AND c.BANK=\'{}\' \
-    ORDER BY c.cashback DESC;'.format(product, card_inp, bank_inp))
+    cursor2 = g.conn.execute("""
+      SELECT c.cashback, c.Bank, c.creditCardType
+      FROM merchants m, sells s, card_offer_discount c
+      WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category) 
+      AND c.creditCardType=%s AND c.BANK=%s
+      ORDER BY c.cashback DESC;
+      """,product, card_inp, bank_inp)
   else:
     cursor2 = g.conn.execute("""
-    SELECT card.cashback, card.creditCardType, card.Bank
-    FROM card_offer_discount card
-    WHERE card.cashback IN (
-      SELECT c.cashback
+      SELECT c.cashback, c.Bank, c.creditCardType
       FROM merchants m, sells s, card_offer_discount c
       WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category)
-      )
-    ORDER BY card.cashback DESC;
-
-    """,product)
+      ORDER BY card.cashback DESC;
+      """,product)
     
   for result in cursor2:
     output.append(result)
