@@ -275,7 +275,8 @@ def search():
       WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category)
       ORDER BY c.cashback DESC;
       """,product)
-    
+  output.append('Credit Cards with Cashback')
+  output.append('Cashback (%), Bank, Card')
   for result in cursor2:
     output.append(result)
   cursor2.close()
