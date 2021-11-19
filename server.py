@@ -128,7 +128,7 @@ def index():
   """)
   products = []
   for result in cursor:
-    print(result)
+    print(result, type(result))
     products.append(result)  # can also be accessed using result[0]
   cursor.close()
   context.update(product = products)
@@ -141,7 +141,9 @@ def index():
   creditcards = []
   print('=====================')
   for result in cursor:
-    print(result)
+    print(result, type(result))
+    for i in result:
+        print(i, type(i))
     creditcards.append(result)  # can also be accessed using result[0]
   print('=====================')
   cursor.close()
@@ -165,6 +167,7 @@ def search():
   print('***********************')
   product = request.form['products']
   creditcard = request.form['creditcard']
+  print('This is credit card input:', creditcard)
   # bank = request.form['bank']
   coupon = request.form['coupontype']
 
@@ -265,20 +268,15 @@ def search():
  ## pick the credit card of interest ##
   if (creditcard != ''):
     print(creditcard, type(creditcard))
-    bank_inp, card_inp = creditcard.split(", ")
-    
-    cursor2 = g.conn.execute("""
-    SELECT card.cashback, card.creditCardType, card.Bank
-    FROM card_offer_discount card
-    WHERE card.cashback IN (
-      SELECT c.cashback
-      FROM merchants m, sells s, card_offer_discount c
-      WHERE s.productid=%s AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category) AND 
-        c.creditCardType=%s AND c.BANK=%s
-      )
-    ORDER BY card.cashback DESC;
-
-    """,product, card_inp[:-1], bank_inp[1:]) #remove '(' and ')'
+    bank_inp, card_inp = creditcard.split(";")
+    card_inp = ' '.join(card_inp.split(','))
+    bank_inp = ' '.join(bank_inp.split(','))
+    print(bank_inp, card_inp, 'finally!!!!')
+    cursor2 = g.conn.execute(' \
+    SELECT c.cashback, c.Bank, c.creditCardType \
+      FROM merchants m, sells s, card_offer_discount c \
+      WHERE s.productid=\'{}\' AND m.merchantid = s.merchantid AND c.merchantcategory = ANY(m.category) AND c.creditCardType=\'{}\' AND c.BANK=\'{}\' \
+    ORDER BY c.cashback DESC;'.format(product, card_inp, bank_inp))
   else:
     cursor2 = g.conn.execute("""
     SELECT card.cashback, card.creditCardType, card.Bank
@@ -292,9 +290,9 @@ def search():
 
     """,product)
     
-    for result in cursor2:
-        output.append(result)
-    cursor2.close()
+  for result in cursor2:
+    output.append(result)
+  cursor2.close()
 
   context = dict(data = output)
   # g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)

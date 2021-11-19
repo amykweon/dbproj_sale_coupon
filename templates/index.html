@@ -33,7 +33,10 @@
   <select name="creditcard">
     <option value=''>Which Bank and Credit Card?</option>
     {% for n in creditcard %}
-    <option value={{n}}>{{n}}</option>
+    	 {% set card = n[0]|replace(' ', ',') %}
+	 {% set bank = n[1]|replace(' ', ',') %}
+	 {% set out = bank ~ ';' ~ card%}
+	 <option value={{out}}>{{n[1]}} {{n[0]}} </option>
     {% endfor %}
   </select>
   <!-- <select name="bank">
